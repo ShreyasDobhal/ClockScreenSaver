@@ -4,6 +4,8 @@ import time
 import calendar
 from datetime import datetime
 
+CAL_SIZE = [600, 400]
+
 class DigitalClock:
     def __init__(self, root):
         self.root = root
@@ -12,11 +14,15 @@ class DigitalClock:
         self.root.configure(background='black')
 
         # Bind the mouse click event to close the window
-        self.root.bind("<Button-1>", self.close_window)
+        # self.root.bind("<Button-1>", self.close_window)
+        # Bind various events to close the window
+        self.root.bind("<Button-1>", self.close_window)  # Mouse click
+        self.root.bind("<Key>", self.close_window)       # Key press
+        self.root.bind("<Motion>", self.close_window)    # Mouse movement
 
         # Custom font
         self.custom_font = font.Font(family='Roboto', size=100)
-        self.calendar_font = font.Font(family='Roboto', size=20)
+        self.calendar_font = font.Font(family='Roboto', size=16)
 
         # Canvas for precise text placement
         self.canvas = tk.Canvas(root, bg='black', highlightthickness=0)
@@ -24,17 +30,11 @@ class DigitalClock:
 
         # Draw calendar and clock
         self.draw_calendar()
-        self.time_text_id = self.canvas.create_text(
-            root.winfo_screenwidth() // 2, 
-            root.winfo_screenheight() // 2 + 200,
-            font=self.custom_font, 
-            fill='white',
-            text=""
-        )
+        
 
         self.update_clock()
 
-    def draw_calendar(self):
+    def draw_calendar(self, align="right"):
         now = datetime.now()
         year = now.year
         month = now.month
@@ -43,16 +43,22 @@ class DigitalClock:
         cal = calendar.monthcalendar(year, month)
         days_of_week = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-        cal_width = self.root.winfo_screenwidth() // 1.5
-        cal_height = self.root.winfo_screenheight() // 4
-        x_start = self.root.winfo_screenwidth() // 2 - cal_width // 2
-        y_start = 50
+        cal_width = self.root.winfo_screenwidth() // 4.5
+        cal_height = self.root.winfo_screenheight() // 4.5
+        if align == 'right':
+            x_start = self.root.winfo_screenwidth() * 3 // 4 - cal_width // 2
+        elif align == 'left':
+            x_start = self.root.winfo_screenwidth() // 4 - cal_width // 2
+        else:
+            x_start = self.root.winfo_screenwidth() // 2 - cal_width // 2
 
-        # Draw rounded rectangle for the calendar background
+        y_start = 200
+
+        # Draw rectangle for the calendar background
         self.canvas.create_rectangle(
             x_start, y_start,
             x_start + cal_width, y_start + cal_height,
-            fill='#888888', outline='', width=0, stipple='gray50'
+            fill='#555555', outline='', width=0, stipple='gray50'
         )
 
         cell_width = cal_width // 7
@@ -82,15 +88,30 @@ class DigitalClock:
                     )
                     if day_num == day:
                         self.canvas.create_rectangle(
-                            x - cell_width // 2 + 5, y - cell_height // 2 + 5,
-                            x + cell_width // 2 - 5, y + cell_height // 2 - 5,
+                            x - cell_width // 2 + 3, y - cell_height // 2 + 1,
+                            x + cell_width // 2 - 3, y + cell_height // 2 - 1,
                             outline='white', width=2
                         )
+        
+        if align == 'right':
+            x_start = self.root.winfo_screenwidth() * 3 // 4
+        elif align == 'left':
+            x_start = self.root.winfo_screenwidth() // 4
+        else:
+            x_start = self.root.winfo_screenwidth() // 2
+
+        self.time_text_id = self.canvas.create_text(
+            x_start,
+            y_start + cell_height + 300,
+            font=self.custom_font, 
+            fill='white',
+            text=""
+        )
 
     def update_clock(self):
-        current_time = time.strftime("%H:%M:%S")
+        current_time = time.strftime("%H:%M")
         self.canvas.itemconfig(self.time_text_id, text=current_time)
-        self.root.after(1000, self.update_clock)
+        self.root.after(60000, self.update_clock)
 
     def close_window(self, event):
         self.root.destroy()
