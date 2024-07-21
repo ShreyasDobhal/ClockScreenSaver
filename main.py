@@ -34,7 +34,7 @@ class DigitalClock:
 
         self.update_clock()
 
-    def draw_calendar(self, align="right"):
+    def draw_calendar(self, align="left"):
         now = datetime.now()
         year = now.year
         month = now.month
