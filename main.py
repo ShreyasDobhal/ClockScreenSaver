@@ -9,6 +9,9 @@ class DigitalClock:
         self.root.attributes("-fullscreen", True)
         self.root.configure(background='black')
 
+        # Bind the mouse click event to close the window
+        self.root.bind("<Button-1>", self.close_window)
+
         # Custom font
         self.custom_font = font.Font(family='Roboto', size=100)
 
@@ -31,6 +34,9 @@ class DigitalClock:
         current_time = time.strftime("%H:%M:%S")
         self.canvas.itemconfig(self.time_text_id, text=current_time)
         self.root.after(1000, self.update_clock)
+
+    def close_window(self, event):
+        self.root.destroy()
 
 if __name__ == "__main__":
     root = tk.Tk()
