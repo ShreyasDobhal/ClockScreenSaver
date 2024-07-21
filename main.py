@@ -12,15 +12,24 @@ class DigitalClock:
         # Custom font
         self.custom_font = font.Font(family='Roboto', size=100)
 
-        # Time label
-        self.time_label = tk.Label(root, font=self.custom_font, fg='white', bg='black')
-        self.time_label.pack(expand=True)
+        # Canvas for precise text placement
+        self.canvas = tk.Canvas(root, bg='black', highlightthickness=0)
+        self.canvas.pack(fill=tk.BOTH, expand=True)
+
+        # Time text ID
+        self.time_text_id = self.canvas.create_text(
+            root.winfo_screenwidth() // 2, 
+            root.winfo_screenheight() // 2,
+            font=self.custom_font, 
+            fill='white',
+            text=""
+        )
 
         self.update_clock()
 
     def update_clock(self):
         current_time = time.strftime("%H:%M:%S")
-        self.time_label.config(text=current_time)
+        self.canvas.itemconfig(self.time_text_id, text=current_time)
         self.root.after(1000, self.update_clock)
 
 if __name__ == "__main__":
