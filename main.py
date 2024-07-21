@@ -1,28 +1,29 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter.font import Font
-from time import strftime
+from tkinter import font
+import time
 
-# Function to update the label with current time
-def update_time():
-    current_time = strftime('%H:%M:%S %p')  # Format: hours:minutes:seconds AM/PM
-    digital_clock.config(text=current_time)
-    digital_clock.after(1000, update_time)  # Update every 1000 milliseconds (1 second)
+class DigitalClock:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Digital Clock")
+        self.root.attributes("-fullscreen", True)
+        self.root.configure(background='black')
 
-# Create the main window
-root = tk.Tk()
-root.title('Digital Clock')
-root.configure(bg='black')  # Set background color to black
+        # Custom font
+        self.custom_font = font.Font(family='Roboto', size=100)
 
-# Create a custom font (Roboto, 36pt, bold)
-custom_font = Font(family='Roboto', size=36, weight='bold')
+        # Time label
+        self.time_label = tk.Label(root, font=self.custom_font, fg='white', bg='black')
+        self.time_label.pack(expand=True)
 
-# Create a label widget to display the time
-digital_clock = ttk.Label(root, font=custom_font, background='black', foreground='white')
-digital_clock.pack(padx=20, pady=40)  # Add some padding around the clock
+        self.update_clock()
 
-# Call the update_time function initially to set the clock
-update_time()
+    def update_clock(self):
+        current_time = time.strftime("%H:%M:%S")
+        self.time_label.config(text=current_time)
+        self.root.after(1000, self.update_clock)
 
-# Run the Tkinter event loop
-root.mainloop()
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = DigitalClock(root)
+    root.mainloop()
